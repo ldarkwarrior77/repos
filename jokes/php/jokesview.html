@@ -1,0 +1,128 @@
+<html>
+    <head>
+        <title>KNC | The Internet Chuck Norris Database</title>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
+    </head>
+
+    <body>
+
+        <form name=joker>
+            Elegi los filtros por categorias:
+            <br>
+            <input type="checkbox" name="category3" value="">Sin Categoria</input>
+            <input type="checkbox" name="category1" class="categoryBox" value="nerdy">Nerdy</input>
+            <input type="checkbox" name="category2" class="categoryBox" value="explicit">Explicit</input>
+            <br>
+            Limit
+            <br>
+            <input type="text" name="limit" class="limitItems" value="0" />
+            <br>
+            Pagina
+            <br>
+            <input type="text" class="page" value="1"/>
+            <br>
+            <input type="button" name="send" class="enviar" value="Enviar"/><br>
+             <div class="jokesList">
+
+             </div>
+        </form>
+
+        <div style="display:none;" class="jokeSchema">
+            <div class="joke"></div>
+        </div>
+
+    </body>
+<style type="text/css">
+    body {
+        background-color: whitesmoke;
+    }
+    .limitItems, .page {
+        text-align: right;
+    }
+</style>
+<script type="text/javascript">
+
+var limit = 5;
+
+var page = 1;
+
+$(".enviar").click(function() {
+
+    limit = $("input[name=limit]").val() != "0" ? parseInt($("input[name=limit]").val()):limit;
+
+    page = parseInt($(".page").val()) > 0 ? parseInt($(".page").val()):5;
+
+    var offset = (page-1)*limit;
+
+    var paramsData = {'limitTo' : '', 'firstName' : 'Kevin', 'lastName' : 'Cabrera'};
+
+    $(".categoryBox").each(function() {
+        if ($(this).prop("checked") == true) {
+            paramsData.limitTo += $(this).val() + ",";
+        }
+    });
+
+    if(paramsData.limitTo == "") {
+        delete paramsData.limitTo;
+    }
+
+    $.ajax({
+      url: 'http://localhost:3000/jokes.php',
+      method: 'GET',
+      headers: {'Access-Control-Allow-Origin': '*'},
+      data: {'params':paramsData, 'limit':limit, 'offset':offset}
+    }).done(function(data) {
+        $(".jokesList").html("");
+        var jokesList = $.parseJSON(data);
+        jokesList.sort(function (a, b) {
+            if (a.joke.length > b.joke.length) {
+            return 1;
+            }
+            if (a.joke.length < b.joke.length) {
+            return -1;
+            }
+            return 0;
+        });
+
+        $.each(jokesList, function() {
+            if (this.hasOwnProperty('id')) {
+
+                var jokeId = this.id;
+                var jokeDesc = this.joke;
+
+                var jokeDiv = $(".jokeSchema .joke").clone();
+
+                jokeDiv.html(jokeDesc);
+                jokeDiv.attr("id", jokeId);
+
+                $(".jokesList").append(jokeDiv);
+            }
+        });
+
+        if($(".jokesList .joke").length == 0) {
+            $(".jokesList").html(jokesList);
+        }
+    });
+
+});
+
+$("input[name=category3]").click(function() {
+    $("input[name=category1]").prop("checked", false);
+    $("input[name=category2]").prop("checked", false);
+});
+
+$("input[name=category1]").click(function() {
+    uncheckUnCategory();
+});
+$("input[name=category2]").click(function() {
+    uncheckUnCategory();
+});
+
+function uncheckUnCategory() {
+    $("input[name=category3]").prop("checked", false);
+}
+
+</script>
+
+
+</html>

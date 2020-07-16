@@ -1,0 +1,33 @@
+img {
+  width: 32%;
+  margin: 6px auto;
+
+
+
+}
+
+body{
+  margin: none;
+}
+
+section{
+  display: flex;
+  flex-wrap: wrap;
+  margin: none;
+}
+
+@media(max-width: 1600px){
+  img{
+    width: 47%;
+  }
+}
+@media(max-width: 1000px){
+  img{
+    width: 80%;
+  }
+  h1{
+    text-align: center;
+  }
+}
+
+  /* @media (max-width: 1800px) */
